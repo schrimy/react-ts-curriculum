@@ -1,10 +1,32 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { fetchMainPosts } from '../utils/api'
+import { fetchMainPosts, posts } from '../utils/api'
 import Loading from './Loading'
 import PostsList from './PostsList'
 
-function postsReducer (state, action) {
+interface postsState {
+  loading: boolean | null;
+  error: string | null;
+  posts: posts[] | null;
+}
+
+interface poststFetchAction {
+  type: 'fetch';
+}
+
+interface poststSuccessAction {
+  type: 'success';
+  posts: posts[];
+}
+
+interface poststErrorAction {
+  type: 'error'
+  error: string;
+}
+
+type postsActions = poststFetchAction | poststSuccessAction | poststErrorAction;
+
+function postsReducer (state: postsState, action: postsActions) {
   if (action.type === 'fetch') {
     return {
       posts: null,
@@ -20,7 +42,7 @@ function postsReducer (state, action) {
   } else if (action.type === 'error') {
     return {
       posts: state.posts,
-      error: action.message,
+      error: action.error,
       loading: false
     }
   } else {
@@ -28,7 +50,7 @@ function postsReducer (state, action) {
   }
 }
 
-export default function Posts ({ type }) {
+export default function Posts ({ type }: {  type: string }) {
   const [state, dispatch] = React.useReducer(
     postsReducer,
     { posts: null, error: null, loading: true }

@@ -1,10 +1,16 @@
 const api = `https://hacker-news.firebaseio.com/v0`
 const json = '.json?print=pretty'
 
-interface posts {
+export interface posts {
   dead: boolean;
   deleted: boolean;
   type: string;
+  id: number;
+  url: string;
+  title: string;
+  by: string;
+  time: number;
+  descendants: number;
 }
 
 function removeDead (posts: posts[]): posts[] {
