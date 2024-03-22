@@ -4,14 +4,14 @@ import PropTypes from 'prop-types'
 import { formatDate } from '../utils/helpers'
 import ThemeContext from '../contexts/theme'
 
-export default function PostMetaInfo ({ by, time, id, descendants }: { by: string, time: number, id: number, descendants: number }) {
+export default function PostMetaInfo ({ comment = false, by, time, id, descendants }: { comment?: boolean, by: string, time: number, id: number, descendants?: number }) {
   const theme = React.useContext(ThemeContext)
 
   return (
     <div className={`meta-info-${theme}`}>
       <span>by <Link to={`/user?id=${by}`}>{by}</Link></span>
       <span>on {formatDate(time)}</span>
-      {typeof descendants === 'number' && (
+      {(typeof descendants === 'number' && comment) && (
         <span>
           with <Link to={`/post?id=${id}`}>{descendants}</Link> comments
         </span>

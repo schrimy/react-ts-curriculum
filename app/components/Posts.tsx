@@ -1,13 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { fetchMainPosts, posts } from '../utils/api'
+import { fetchMainPosts, post } from '../utils/api'
 import Loading from './Loading'
 import PostsList from './PostsList'
 
 interface postsState {
   loading: boolean | null;
   error: string | null;
-  posts: posts[] | null;
+  posts: post[] | null;
 }
 
 interface poststFetchAction {
@@ -16,7 +16,7 @@ interface poststFetchAction {
 
 interface poststSuccessAction {
   type: 'success';
-  posts: posts[];
+  posts: post[];
 }
 
 interface poststErrorAction {

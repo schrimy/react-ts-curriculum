@@ -1,7 +1,7 @@
 const api = `https://hacker-news.firebaseio.com/v0`
 const json = '.json?print=pretty'
 
-export interface posts {
+export interface post {
   dead: boolean;
   deleted: boolean;
   type: string;
@@ -11,35 +11,37 @@ export interface posts {
   by: string;
   time: number;
   descendants: number;
+  kids: string[];
+  text: string;
 }
 
-function removeDead (posts: posts[]): posts[] {
+function removeDead (posts: post[]): post[] {
   return posts.filter(Boolean).filter(({ dead }) => dead !== true)
 }
 
-function removeDeleted (posts: posts[]): posts[] {
+function removeDeleted (posts: post[]): post[] {
   return posts.filter(({ deleted }) => deleted !== true)
 }
 
-function onlyComments (posts: posts[]): posts[] {
+function onlyComments (posts: post[]): post[] {
   return posts.filter(({ type }) => type === 'comment')
 }
 
-function onlyPosts (posts: posts[]): posts[] {
+function onlyPosts (posts: post[]): post[] {
   return posts.filter(({ type }) => type === 'story')
 }
 
-export function fetchItem (id: string): Promise<posts> {
+export function fetchItem (id: string): Promise<post> {
   return fetch(`${api}/item/${id}${json}`)
     .then((res) => res.json())
 }
 
-export function fetchComments (ids: string[]): Promise<posts[]> {
+export function fetchComments (ids: string[]): Promise<post[]> {
   return Promise.all(ids.map(fetchItem))
     .then((comments) => removeDeleted(onlyComments(removeDead(comments))))
 }
 
-export function fetchMainPosts (type: string): Promise<posts[]> {
+export function fetchMainPosts (type: string): Promise<post[]> {
   return fetch(`${api}/${type}stories${json}`)
     .then((res) => res.json())
     .then((ids) => {
@@ -58,7 +60,7 @@ export function fetchUser (id: string) {
     .then((res) => res.json())
 }
 
-export function fetchPosts (ids: string[]): Promise<posts[]> {
+export function fetchPosts (ids: string[]): Promise<post[]> {
   return Promise.all(ids.map(fetchItem))
     .then((posts) => removeDeleted(onlyPosts(removeDead(posts))))
 }

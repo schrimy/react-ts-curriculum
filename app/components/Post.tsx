@@ -1,12 +1,41 @@
 import React from "react";
 import queryString from "query-string";
-import { fetchItem, fetchPosts, fetchComments } from "../utils/api";
+import { fetchItem, fetchPosts, fetchComments, post } from "../utils/api";
 import Loading from "./Loading";
 import PostMetaInfo from "./PostMetaInfo";
 import Title from "./Title";
 import Comment from "./Comment";
 
-function postReducer(state, action) {
+interface postState {
+  post: post | null;
+  loadingPost: boolean;
+  comments: post[] | null;
+  loadingComments: boolean;
+  error: string | null;
+}
+
+interface postFetchAction {
+ type: "fetch";
+}
+
+interface postPostAction {
+  type: "post";
+  post: post | null;
+}
+
+interface  postCommentsAction {
+  type: "comments";
+  comments: post[] | null;
+}
+
+interface postErrorAction {
+  type: "error";
+  error: string | null;
+}
+
+type postActions = postFetchAction | postPostAction | postCommentsAction | postErrorAction;
+
+function postReducer(state: postState, action: postActions) {
   if (action.type === "fetch") {
     return {
       ...state,
@@ -37,8 +66,8 @@ function postReducer(state, action) {
   }
 }
 
-export default function Post({ location }) {
-  const { id } = queryString.parse(location.search);
+export default function Post({ location }: { location: { search: string }}) {
+  const { id } = queryString.parse(location.search) as { id: string };
   const [state, dispatch] = React.useReducer(postReducer, {
     post: null,
     loadingPost: true,
@@ -72,7 +101,7 @@ export default function Post({ location }) {
 
   return (
     <React.Fragment>
-      {loadingPost === true ? (
+      {loadingPost === true || !post ? (
         <Loading text="Fetching post" />
       ) : (
         <React.Fragment>
@@ -88,7 +117,7 @@ export default function Post({ location }) {
           <p dangerouslySetInnerHTML={{ __html: post.text }} />
         </React.Fragment>
       )}
-      {loadingComments === true ? (
+      {loadingComments === true || !comments ? (
         loadingPost === false && <Loading text="Fetching comments" />
       ) : (
         <React.Fragment>
