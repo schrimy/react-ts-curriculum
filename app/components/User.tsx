@@ -1,11 +1,47 @@
 import React from "react";
 import queryString from "query-string";
-import { fetchUser, fetchPosts } from "../utils/api";
+import { fetchUser, fetchPosts, post } from "../utils/api";
 import Loading from "./Loading";
 import { formatDate } from "../utils/helpers";
 import PostsList from "./PostsList";
 
-function postReducer(state, action) {
+interface user {
+  id: number;
+  created: number;
+  karma: string;
+  about: string;
+}
+
+interface userState {
+  user: user | null;
+  loadingUser: boolean;
+  posts: post[] | null;
+  loadingPosts: boolean;
+  error: string | null;
+}
+
+interface userFetchAction {
+  type: "fetch";
+}
+
+interface userUserAction {
+  type: "user";
+  user: user;
+}
+
+interface userPostsAction {
+  type: "posts";
+  posts: post[];
+}
+
+interface userErrorAction {
+  type: "error";
+  message: string;
+}
+
+type userActions = userFetchAction | userUserAction | userPostsAction | userErrorAction;
+
+function postReducer(state: userState, action: userActions) {
   if (action.type === "fetch") {
     return {
       ...state,
@@ -37,8 +73,8 @@ function postReducer(state, action) {
   }
 }
 
-export default function User({ location }) {
-  const { id } = queryString.parse(location.search);
+export default function User({ location }: { location: { search: string }}) {
+  const { id } = queryString.parse(location.search) as { id: string };
 
   const [state, dispatch] = React.useReducer(postReducer, {
     user: null,
@@ -68,7 +104,7 @@ export default function User({ location }) {
 
   return (
     <React.Fragment>
-      {loadingUser === true ? (
+      {loadingUser === true || !user ? (
         <Loading text="Fetching User" />
       ) : (
         <React.Fragment>
