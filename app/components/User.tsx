@@ -5,15 +5,15 @@ import Loading from "./Loading";
 import { formatDate } from "../utils/helpers";
 import PostsList from "./PostsList";
 
-interface user {
+interface author {
   id: number;
   created: number;
-  karma: string;
+  karma: number;
   about: string;
 }
 
 interface userState {
-  user: user | null;
+  user: author | null;
   loadingUser: boolean;
   posts: post[] | null;
   loadingPosts: boolean;
@@ -26,7 +26,7 @@ interface userFetchAction {
 
 interface userUserAction {
   type: "user";
-  user: user;
+  user: author;
 }
 
 interface userPostsAction {
